@@ -29,7 +29,8 @@ function getCountryByIP() {
         .then(response => response.json())
         .then(data => {
             const country = data.country;
-            // TODO inject country to form and call getCountryCode(country) function
+            document.getElementById('country').value = country;
+            getCountryCode(country);
         })
         .catch(error => {
             console.error('Błąd pobierania danych z serwera GeoJS:', error);
@@ -40,20 +41,29 @@ function getCountryCode(countryName) {
     const apiUrl = `https://restcountries.com/v3.1/name/${countryName}?fullText=true`;
 
     fetch(apiUrl)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Błąd pobierania danych');
-        }
-        return response.json();
-    })
-    .then(data => {        
-        const countryCode = data[0].idd.root + data[0].idd.suffixes.join("")
-        // TODO inject countryCode to form
-    })
-    .catch(error => {
-        console.error('Wystąpił błąd:', error);
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Błąd pobierania danych');
+            }
+            return response.json();
+        })
+        .then(data => {        
+            const countryCode = data[0].idd.root + data[0].idd.suffixes.join("");
+            document.getElementById('countryCode').value = countryCode;
+        })
+        .catch(error => {
+            console.error('Wystąpił błąd:', error);
+        });
 }
+
+document.getElementById('vatUE').addEventListener('change', function() {
+    var vatFields = document.getElementById('vatFields');
+    if(this.checked) {
+        vatFields.style.display = 'block';
+    } else {
+        vatFields.style.display = 'none';
+    }
+});
 
 
 (() => {
@@ -61,4 +71,7 @@ function getCountryCode(countryName) {
     document.addEventListener('click', handleClick);
 
     fetchAndFillCountries();
-})()
+
+    // Wywołanie funkcji pobierającej kraj na podstawie IP
+    getCountryByIP();
+})();
